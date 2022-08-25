@@ -48,3 +48,47 @@ php artisan make:controller ProvisionServer --invokable
 
 
 "Seeders"
+
+Seeders are used to pass in correct data inside the database, the seeder file is made
+when you create the migration throught the terminal and add the -s flag as seeder
+the DatabaseSeeder is the main seed file that is used. The other seeder that we made will
+only contain the data in an array and then it will passed in the DatabaseSeeder file inside
+the run method "$this->call(TestSeeder::class);"
+
+Next we need to loop the data and interact with the database system of laravel and for that 
+we will use the Laravel Eloquent Model system instead of Query Builder as Eloquent makes it 
+a bit easier to understand and write the queries using keywords like "create(), update(), delete()"
+etc ...
+
+We will be using the foreach loop as shown below
+
+"
+[
+    'title' => 'Post one',
+    'excerpt' => 'Summery of Post one',
+    'body' => 'Body of Post one',
+    'minutes_to_read' => 5,
+    'image_path' => 'Empty',
+    'is_published' => false,
+]
+
+foreach ($posts as $key => $value) {
+    Post::create($value);
+}   
+"
+
+Since we only want the values so we will only pass in the "$value" inside the create method.
+
+Now inside the DatabaseSeeder file ----> inside the run method -----> we will call our 
+"PostSeeder" by using the "this" global access keyword as shown below
+
+"$this->call(PostSeeder::class);"
+
+
+There are 2 ways to run seeders using the CLI/terminal.
+
+1 - Running it with the migrations
+"php artisan migrate --seed"
+
+2 - Running it Seperatly
+"php artisan db:seed"
