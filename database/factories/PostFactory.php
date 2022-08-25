@@ -21,7 +21,7 @@ class PostFactory extends Factory
             'excerpt' => $this->faker->sentence(),
             'body' => $this->faker->paragraph(),
             'minutes_to_read' => $this->faker->numberBetween(1, 20),
-            'image_path' => $this->faker->image('public/images', 640, 480, null, false),
+            'image_path' => $this->faker->imageUrl(640, 480, null, true, null, false),
             'is_published' => $this->faker->numberBetween(0, 1),
         ];
     }

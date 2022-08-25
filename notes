@@ -199,3 +199,206 @@ Post::factory(20)->create([
     'body' => 'Overriding the body' -----> overriding the body text
 ]);
 "
+
+
+
+Laravel Query Builder
+
+Query builder is used for interacting with the database like storing information
+and displaying all or any data based on a condition. The first method is by using 
+the laravel query builder.
+
+To use query builder, we fisrt need to pull in its use facade called 
+"use Illuminate\Support\Facades\DB;" ----> (ignore the color).
+
+Facades are used so that we can use static methods to access non-static resources.
+Whenever we want to access methods of the facade, we need to use double columns after
+the facade class as shown below
+
+"
+DB::
+"
+
+After this we can then access the methods that are available inside this facade.
+"
+DB::available_method()
+"
+
+"DB::statement();" ---> the statement() is one of the many available methods used for 
+query builder and this will accept a string or raw sql query. This will check of your
+query is acceptable or not and will return a boolean "true" or "1".
+
+Example of raw sql query :-
+
+"
+SELECT * FROM users
+"
+
+then you can display the output.
+
+Full example :-
+"
+$test = DB::statement('SELECT * FROM users');
+print_r($test);
+die(); ----> used to end the compilation of code (optional)
+return view('welcome');
+"
+
+Using the select statement in query builder will display the data that is available
+in our database. The select method is shown Below
+
+"
+DB::select('select * from posts');
+"
+
+An important topic in coding is parameter binding or prepared statements. Laravel has
+implemented PDO 
+
+NOTE :-
+
+PDO (PHP Data Objects) is an abstraction layer for your database queries and is
+an awesome alternative to MySQLi, as it supports 12 different database drivers.
+his is an immense benefit for people and companies that need it. However, keep
+in mind that MySQL is by far the most popular database.
+
+
+"Where clause"
+
+"
+DB::select('select * from posts where id = 1');
+"
+The where keyword is used to provide conditions so that the result is shown only when
+the condition is met. However this is also not the best way to do things as this can 
+lead to potential sql attacks.
+
+The best way will be the placeholder where we will use the "?" as a placeholder and 
+after the comma (,) we will pass an array with index of 1 which will dynamically return
+the value of the first row from the database as shown below
+
+"
+DB::select('select * from users where id = ?', ['id' => 1]);
+
+DB::select('select * from users where id = :id', ['id' => 1]);
+"
+
+You can replace the "?" with a named placeholder, the name should be equal to the name
+of database column name for better understanding and consistancy.
+
+
+NOTE :-
+The sql keywords are not case sensitive so you can write them in small or all capital.  
+
+
+"Insert clause"
+
+We use this clause to actually submit data and save it in the database or server as shown below
+
+
+"
+DB::insert('insert into posts (title, excerpt, body, image_path, is_published, minutes_to_read, is_published)
+        values
+        (?, ?, ?, ?, ?, ?)', ['Test', 'test', 'test', 'test', true, 1]);
+"
+
+The first part of the query is where you define all your table tuples or column names, the next part is the 
+keyword called "values", this ensures we are going to insert some data or values in the database.
+
+We again went with the dynamically firing query by using the placeholders inside the values () parenthesis
+and passing the array of data.
+
+
+"Update clause"
+
+We use this to update/edit the previously stored data as shown below
+
+"
+DB::update('update posts set body = :body where id = :id', ['body 2', 44]);
+"
+
+Update is a keyword then we select the table name, after that we will set the column name and set 
+a placeholder for it, next we will use the where keyword and define any other column name with its
+placeholder and then in the end we pass the array where we will pass in the data that we want to update
+
+
+"Delete clause"
+
+We use this to remove records from our database 
+
+"
+DB::delete('delete from posts where id = :id,' [40]);
+"
+
+The first part is the delete keyword that indicates that we are deleting something, next is the name 
+of the table from which we are going to delete something, then we use the where clause so that we can 
+check if that data actually exists in the first place or not.
+
+These were the simple basic ones, next we will see some complex ones which involve the use of chaining 
+different methods to perform the task.
+
+"
+DB::table('table_name')->get();
+"
+
+The get method is used for fetching the data that is stored in the database and display it to the screen,
+the get method should always be in the end as it is the method used for actually displaying results after
+other methods have fired their functions.
+
+
+Other chaining methods include such as "select()" which will return back only the data we want to see as
+shown below
+
+"
+$test = DB::table('posts')
+            ->select('id')
+            ->get();
+        dd($test); ----> this laravel's way of writing var_dump(), this will dump the result and stop the compiler
+                        after dumping
+"
+
+We can pass in multiple parameters inside the select method as well 
+
+"
+$test = DB::table('posts')
+            ->select('id', 'title')
+            ->get();
+        dd($test);
+"
+
+Now we will chain the where method 
+
+"
+$test = DB::table('posts')
+        ->where('id', '=', 5)
+        ->get();
+"
+
+Inside this where method, we have 3 parameters. The fields are the name of the table and the comparison operator
+or any other operations that we want to perform and the last is the value 
+
+Adding the comparison operator will explicitly apply the desired comparison we are performing however if you do
+not add it, then by default the operator will be set to "=".
+
+"
+$test = DB::table('posts')
+        ->where('id', 5)
+"
+
+We can also pass in boolean as a value instead of integer or string
+
+"
+$test = DB::table('posts')
+        ->where('is_published', true)
+"
+
+We can pass in multiple where methdos for more conditions.
+
+"
+$test = DB::table('posts')
+        ->where('is_published', true)
+        ->where('id', '>', 10)
+        ->get();        
+dd($test);
+"
+
+To summerize, there are many methdos available for the query builder facade and we need the docs to see them
+all.
