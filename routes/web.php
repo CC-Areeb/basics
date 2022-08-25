@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CrudController;
+use App\Http\Controllers\FallbackController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +16,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::resource('/home', CrudController::class);
-Route::get('/', [CrudController::class, 'index']);
+Route::get('/', [CrudController::class, 'index'])->name('home.index');
+
+Route::fallback(FallbackController::class); 

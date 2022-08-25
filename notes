@@ -1,0 +1,50 @@
+"Few Routing ways"
+
+
+We can use prefixes to set the prefix of a route name and group all the routes that 
+are starting with the same URL point inside that group as shown below
+
+"
+Route::prefix('/test')->group(function() {
+    Route::get(/, [TestController::class, 'test_index']);
+    Route::get(/blog, [TestController::class, 'test_create']);
+    Route::get(/blog/{id}/edit, [TestController::class, 'test_edit']);
+});
+"
+
+We can also use fallback routes so that when user are trying to access incorrect routes
+they will always be redirected to either the home page or the dashboard or the login page
+as shown below
+
+"
+Route::fallback(FallbackController::class);
+"
+
+you can also call in the function inside directly as well as shown below
+
+"
+Route::fallback('/login', function(){
+    return view(login);
+})
+"
+
+I chose to use the controller and inside the controller I have an invoke method 
+as shown below
+
+"
+public function __invoke()
+    {
+        return view('welcome');
+    }
+"
+The invoke method is a special function inside laravel which is used in single action
+controllers.
+
+You can generate an invokable controller by using the --invokable option
+
+"
+php artisan make:controller ProvisionServer --invokable
+"
+
+
+"Seeders"
