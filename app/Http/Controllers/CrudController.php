@@ -18,26 +18,10 @@ class CrudController extends Controller
     public function index()
     {
         // display the home page
-
-        // $all_users = DB::select('select * from posts where id = :id', ['id' => 1]);
-        // dd($all_users);
-
-        // DB::insert('insert into posts (title, excerpt, body, image_path, is_published, minutes_to_read, is_published)
-        //         values
-        //         (?, ?, ?, ?, ?, ?)', ['Test', 'test', 'test', 'test', true, 1]);
-
-        // DB::update('update posts set body = :body where id = :id', ['body 2', 44]);
-
-        // DB::delete('delete from posts where id = :id,' [40]);
-
-        // $test = DB::table('posts')
-        //             ->select('id', 'title')
-        //             ->where('is_published', true)
-        //             ->where('id', '>', 10)
-        //             ->get();
-        
-        // dd($test);
-        return view('welcome');
+        $posts = DB::table('posts')->get();
+        return view('blog.welcome', [
+            'posts' => $posts,
+        ]);
     }
 
     /**

@@ -402,3 +402,97 @@ dd($test);
 
 To summerize, there are many methdos available for the query builder facade and we need the docs to see them
 all.
+
+
+"Laravel Blade"
+
+First we can use the query builder chaining method to get all the data from the database and store it inside a
+variable as shown below
+
+"
+$posts = DB::table('posts')->get();
+"
+
+We are using the get method as it will fetch us the data. Next we can chain the "with()" method where we are
+returning the view so that we can also display the data inside that view as shown below
+
+"
+return view('blog.welcome')->with('posts', $posts);
+"
+
+The "with()" method accepts a key value pair, so in the quotations we are defining the key so for my case I am
+naming my key "posts" and then the value will be the data we are getting from the dataabse and storing it in the
+variable "$posts"
+
+To make things fairy easy, we can replace the get method with find method which needs a value and it will find us
+that data according to the argument it has as shown below
+
+"
+$posts = DB::table('posts')->find(1);
+"
+
+NOTE :- 
+When we use the find method, it only accepts the id and nothing else, it will return "null" if you pass in a string 
+or somehting that is not an "id".
+
+Now we will display the result that we have stored in the variable in the blade template so that it can be displayed 
+as an actuall output.
+
+To use this, we need to wrap our variable inside the double set of curly braces " {{  }} " and then we can access the
+value that we have set inside the with method as shown below
+
+"
+{{ $posts }}
+"
+
+Here we can use the pointer or access operator " -> " and with this we can access any column of the database we want
+to show
+
+"
+{{ $posts -> id }}
+"
+
+NOTE :-
+
+The " {{  }} " we use are just a syntax and what is actually happening is shown below
+
+"
+<?php echo htmlentites($posts->id) ?>
+"
+
+This protects the users from scripting attacks 
+
+We can use the "compact()" method which returns an array to the view and is a php function.
+This works a bit differently. You need to pass the "compact()" method inside the "view()"
+method as the second parameter and pass in the table name that you have defined in your
+query builder table parameter as shown below
+
+"
+return view(blog.welcome, compact('posts'));
+"
+
+Then we can use the double set of braces "{{  }}" and use the dump method to see the raw
+output as shown below
+
+"
+{{ dump($posts) }}
+"
+
+Finally a better way is to simply pass an array of key value pair and make sure that the key
+name is equal to the variabel which is storing fetch results of your query as shown below
+
+"
+$posts = DB::table('posts')->get();
+return view('blog.welcome', [
+    'posts' => $posts,
+]);
+"
+
+If you want to shorten your code then you can also skip the variable part and just directly
+pass the query as the value inside the array as shown below
+
+"
+return view('blog.welcome', [
+    'posts' => DB::table('posts')->get(),
+]);
+"
