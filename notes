@@ -496,3 +496,55 @@ return view('blog.welcome', [
     'posts' => DB::table('posts')->get(),
 ]);
 "
+
+
+"Blade directives"
+
+These are helpers provided in laravel where we can perform some properties like conditional
+statements and write php codes in between our html code or blade syntax. There are many blade
+syntax or snippets we can use.
+
+NOTE :-
+If you are using VS code then it is better that you install intellisenses for laravel and others
+to make coding a bit eaiser in terms of syntax.
+
+To write use these blade directives, first we write the at symbol "@" and then the keywords.
+
+Sample blade directives shown below
+
+"
+@if (count($posts) > 21)
+    {{ dump('Yes') }}
+@else
+    {{ dump('Nope') }}
+@endif
+"
+
+"
+@if (count($posts) < 1)
+    {{ 'text' }}
+@elseif (count($posts) > 0)
+    {{ 'text' }}
+@else
+    {{ 'text' }}
+@endif
+"
+
+"
+@unless (!$posts)
+    <h1>okay</h1>
+@endunless
+"
+
+The "unless" directive is the opposite of "if" directive that's why the output will be displayed when used
+with the "!" symbols inside the "@unless()".
+
+"
+@foreach ($posts as $post)
+    <h1>All posts</h1>
+@endforeach
+"
+
+The "foreach" and "forelse" is almost similar but the difference is that with the forelse we have a fallback
+option when the object is empty.
+

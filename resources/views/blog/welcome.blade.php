@@ -23,7 +23,12 @@
         </tbody>
     </table> --}}
 
-    {{ dump($posts) }}
+    @forelse ($collection as $item)
+        
+    @empty
+        
+    @endforelse
+
 @endsection
 
 
