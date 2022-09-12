@@ -390,7 +390,7 @@ $test = DB::table('posts')
         ->where('is_published', true)
 "
 
-We can pass in multiple where methdos for more conditions.
+We can pass in multiple where methods for more conditions.
 
 "
 $test = DB::table('posts')
@@ -400,7 +400,7 @@ $test = DB::table('posts')
 dd($test);
 "
 
-To summerize, there are many methdos available for the query builder facade and we need the docs to see them
+To summerize, there are many methods available for the query builder facade and we need the docs to see them
 all.
 
 
@@ -548,3 +548,120 @@ with the "!" symbols inside the "@unless()".
 The "foreach" and "forelse" is almost similar but the difference is that with the forelse we have a fallback
 option when the object is empty.
 
+"
+@forelse ($posts as $post)
+    {{ $post->title }}
+@empty
+    <p>Nothing here to see</p>
+@endforelse
+"
+
+In the forelse loop we have a fallback that runs a different code block when the loop condition is not met.
+
+
+There are some hidden properties we can use with the "foreach" and the "forelse" loop.
+
+the first example is "$loop->index". The "$loop" is an "StdClass" and the index method will return the item that
+has the index of 0
+
+"
+@forelse ($posts as $post)
+    {{ $loop->index }}
+@empty
+    <p>Nothing here to see</p>
+@endforelse
+"
+
+We can replace the index with iteration and this will skip the 0 index and return everything else.
+
+"
+@forelse ($posts as $post)
+    {{ $loop->iteration }}
+@empty
+    <p>Nothing here to see</p>
+@endforelse
+"
+
+We can also use the remaining method and this will return all the values that are leftover
+
+"
+@forelse ($posts as $post)
+    {{ $loop->remaining }}
+@empty
+    <p>Nothing here to see</p>
+@endforelse
+"
+
+We can use the count method so that we can get the exact number of items in our database
+
+"
+@forelse ($posts as $post)
+    {{ $loop->count }}
+@empty
+    <p>Nothing here to see</p>
+@endforelse
+"
+
+NOTE:- this "$loop" StdClass is only going to work when you have accessed your database inside
+your blade directive
+
+"
+Controller :-
+
+$posts = DB::table('posts')->get();
+return view('blog.welcome', [
+    'posts' => $posts,
+]);
+
+Blade :-
+
+@forelse ($posts as $post)
+    {{ $loop->count }}
+@empty
+    <p>Nothing here to see</p>
+@endforelse
+"
+
+We can also use the "first" property and this is a boolean so this will tell if
+this is the first item or not and will return 1 or 0 based on the result.
+
+"
+@forelse ($posts as $post)
+    {{ $loop->first }}
+@empty
+    <p>Nothing here to see</p>
+@endforelse
+"
+
+We also have the "last" property that checks for the last value inside the database
+
+"
+@forelse ($posts as $post)
+    {{ $loop->last }}
+@empty
+    <p>Nothing here to see</p>
+@endforelse
+"
+
+We also have the "depth" property for checking how many loops are being executed
+
+"
+@forelse ($posts as $post)
+    {{ $loop->depth }}
+@empty
+    <p>Nothing here to see</p>
+@endforelse
+"
+
+We also have the "parent" property that references the parent loop
+
+"
+@for ($posts = 0; $posts < $count; $posts++)
+    @forelse ($posts as $post)
+        {{ $loop->depth }}
+    @empty
+        <p>Nothing here to see</p>
+    @endforelse
+@endfor
+"
+the above is just a sample to show nested loops
