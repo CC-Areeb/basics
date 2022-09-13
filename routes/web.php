@@ -16,6 +16,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::resource('/home', CrudController::class);
-Route::get('/', [CrudController::class, 'index'])->name('home.index');
 
 Route::fallback(FallbackController::class); 

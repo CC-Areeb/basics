@@ -479,7 +479,7 @@ output as shown below
 "
 
 Finally a better way is to simply pass an array of key value pair and make sure that the key
-name is equal to the variabel which is storing fetch results of your query as shown below
+name is equal to the variable which is storing fetch results of your query as shown below
 
 "
 $posts = DB::table('posts')->get();
@@ -667,3 +667,196 @@ We also have the "parent" property that references the parent loop
 the above is just a sample to show nested loops
 
 "Eloquent Models"
+
+This is one of the most important features of laravel and this is an active record optional
+relational mapper and makes interacting with the database a lot easier.
+
+Active record means that one eloquent class is responsible for interacting with 1 whole table 
+as well as 1 table row.
+
+"Create a model"
+
+To make a model, we simply need to type the following command
+
+"
+php artisan make:model Test
+"
+
+Side note, we can also attach flags to the model command to include things like database table, controller,
+factory, seeder and more
+
+"-a" is a flag that will make all the relatable things like migration, seeder, controller, factory and much more
+
+"-m" is a flag for migration and mostly used with models so that the model is already connected with that table
+
+"-c" is a flag for making a controller 
+
+"-mc" we can chain multiple flags like this to make the files that you need such as a migration and a controller.
+
+Inside the model we can use some pre-defined variables to apply certain conditions for the model as shown below
+
+" protected $table = 'tests'; "
+laravel automatically applies snake casing so if you do not want to use plural forms then you can define your 
+table like that.
+
+" protected $primaryKey = ''; "
+laravel models by default set the id as the primary key but if we want to change it then we can use this variable
+and set our primary key so something else and has to be from the column names you have defined and inside the
+single quotations
+
+" $table->timestamps(); "
+this is used so that we can add the "created_at" and "updated_at" columns when we migrate the database (it is optional)
+but if you want to disble these, instead of deleting them, we can set the timestamps to be false. By default it is
+always true
+
+" protected $timestamps = false; "
+
+We can also customize the timestaps that are added to our database 
+
+" protected $dateFormat = 'U'; "
+this will store the time in only seconds.
+
+" protected $connection = 'sqlite'; "
+we can also change our database driver for specific model and by using the $connection we can add another
+driver just for this model
+
+"
+protected $attributes = [
+    'key' => 'value',
+];
+"
+we can use this to set values to a default value, this works similarly like the "defalult()" method but we can 
+also do this in the model too.  
+
+
+"Retrieving data from database"
+
+inside our controller we can use the eloquent way of retrieving data.
+
+"
+$posts = Post::all();
+dd($posts);
+"
+the "all()" method returns all the data that is inside the database
+
+"
+$posts = Post::get();
+dd($posts);
+"
+alternativly we can use the "get()" method and this will do the same
+
+NOTE:
+the difference between "get()" and "all()" is that with "get()" we can apply multiple chaining methods whereas with "all()"
+we cannot other chain methods so best if you always use "get()"
+
+"
+$posts = Post::first();
+dd($posts);
+"
+we can change the "get()" with the "first()" method and this will only return the first row of the database and that's 
+it.
+
+"
+$posts = Post::orderBy('id', 'desc')->take(5)->get();
+dd($posts);
+"
+here we have chained in few methods like "orderBy()", "take()" as well as passed in their respective parameters and "get()"
+will be in the end to display the results based on the conditions 
+
+Most of the time we will be using the where clause as this clause lets us apply condition and filter our result before we
+display in the UI.
+
+"
+$posts = Post::where('minutes_to_read', 6)->get();
+dd($posts);
+"
+
+We can also chain multiple where clauses as well to apply more than 1 condition
+
+"
+$posts = Post::where('minutes_to_read', 6)
+            ->where('is_published', 1)
+            ->get();
+dd($posts);
+"
+
+We can also use the comparison operators as by default there is always an "=" equal comparison but we can also
+pass in another argument in between the column name and the condition for different types of comparisions
+
+"
+$posts = Post::where('minutes_to_read', '!=' ,6)->get();
+dd($posts);
+"
+
+now the where clause has 3 arguments, 1st is the column name, 2nd is the operator we want to use and the 3rd is the
+filter or condition we are comparing our data with.
+
+For very large amounts of data, it is wise to always break it down into chunks and then retrieve it
+
+"
+Post::chunk();
+"
+first parameter will be an interger which will define that how much row will be inside a single piece or "chunk"
+
+"
+Post::chunk(5, );
+"
+now we have to add a callback function inside the chunk method 
+
+"
+Post::chunk(5, function($posts){
+    foreach ($posts as $post) {
+        echo $post->title . '<br>';
+    }
+});
+"
+here we are using a foreach loop to print the whole data based on the chunks.
+
+We can also aggregated functions as well as shown below
+
+
+"
+dd(Post::get()->count());
+"
+we have used the count method in SQL and Query builder and we can also use this here when using the eloquent as well
+
+
+
+Another aggregated function is the sum method 
+"
+dd(Post::sum('minutes_to_read'));
+"
+
+Another is the average method
+"
+dd(Post::avg('minutes_to_read'));
+"
+
+
+Usually we want to show all the data that is public inside the index function so when the user lands on that page,
+they can see what info is stored based on the latest time stamps.
+"
+return view('blog.welcome', [
+    'posts' => Post::orderby('created_at', 'desc')->get()
+]);
+"
+Here we are passing the whole model as a value and assigning it a key and then we will use that key in the loop to
+bring the whole data and display it in the screen.
+
+"
+@foreach ($posts as $post)
+    {{ $post->id }}
+@endforeach
+"
+
+We can also just display 1 data based on its id in the show method. To get the data from the database, we need to
+make sure we are that we can do something with the $id variable.
+
+"
+dd(Post::find($id));
+"
+the find method only works with the $id variable and nothing else.
+
+Now we also want to throw an exception when we are trying to find something that does not exist and hence we can use
+the "findOrFail()" method and with this an exception will be given in the form of a 404 status code which means that
+this item or data does not exist.

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -17,10 +17,8 @@ class CrudController extends Controller
      */
     public function index()
     {
-        // display the home page
-        $posts = DB::table('posts')->get();
         return view('blog.welcome', [
-            'posts' => $posts,
+            'posts' => Post::orderby('created_at', 'desc')->get()
         ]);
     }
 
@@ -31,8 +29,7 @@ class CrudController extends Controller
      */
     public function create()
     {
-        // a page where we can enter new data, only show it here
-        return "This is where we show the form for entering new things";
+        
     }
 
     /**
@@ -43,18 +40,7 @@ class CrudController extends Controller
      */
     public function store(Request $request)
     {
-        // actual function block for storing things, Use the POST method
-        $validation = Validator::make($request->all(), [
-            'first_name' => 'required',  
-            'last_name' => 'required',
-            'email' => 'required|unique:users,email',
-            'password' => 'required|unique:users,password|confirmed',
-        ]);
-
-        if ($validation->fails()) {
-            Alert::error('Error', 'There was an error while saving the information');
-            return redirect('/create'); 
-        }
+        
     }
 
     /**
@@ -65,7 +51,9 @@ class CrudController extends Controller
      */
     public function show($id)
     {
-        // Show one thing based on there id
+        return view('blog.show', [
+            'post' => Post::findOrFail($id),
+        ]);
     }
 
     /**
@@ -76,8 +64,6 @@ class CrudController extends Controller
      */
     public function edit($id)
     {
-        // Show the page for editing your previous information
-        return "Edit form";
 
     }
 
@@ -90,7 +76,7 @@ class CrudController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // The main function block for editing a data
+
     }
 
     /**
@@ -101,6 +87,6 @@ class CrudController extends Controller
      */
     public function destroy($id)
     {
-        // Function block for deleting the data (Usually soft deletes)
+
     }
 }
