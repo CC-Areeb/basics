@@ -665,3 +665,5 @@ We also have the "parent" property that references the parent loop
 @endfor
 "
 the above is just a sample to show nested loops
+
+"Eloquent Models"
