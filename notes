@@ -860,3 +860,197 @@ the find method only works with the $id variable and nothing else.
 Now we also want to throw an exception when we are trying to find something that does not exist and hence we can use
 the "findOrFail()" method and with this an exception will be given in the form of a 404 status code which means that
 this item or data does not exist.
+
+
+"SESSIONS"
+
+In general session allows us to save and retrive data based on keys and this is done across multiple requests and this
+data is persistant which means it is saved in the backend where they can be accessed.
+
+Laravel has ways to define a session by using Redis, memcached or other. The sessions file is stored inside the
+"config/session.php". There are many options inside this file to configure your session for the project, by default
+the settings are set like session driver ("SESSION_DRIVER") which is set to "file" and the session timeout
+("SESSION_TIMEOUT") is set to 120 which means 120 minutes (2 hours). Then we have the encrypt where the session data
+is, by default, encrypted. Next we have is the session file location where all the session data is stored, there are
+a lot more data that can be found and configured.
+
+We can use built in session methods like "put()" to store the data and "get()" to retrieve the data. Another method is
+the "push()" method which pushes in new values into an exisiting array.
+
+If you plan on using the put method again then it will override the first value as shown below:
+"
+Session::put('name', 'John');
+Session::put('name', 'Jane');
+dd(
+    Session::get('name')
+);
+"
+The result will be that the previous value will now be updated to the latest one
+
+To avoid this we can use the push method where we first have to put the value inside an array and then push
+more values inside the array.
+
+The example below will show how this is done
+"
+Session::put('name', ['John']);
+Session::push('name', 'Jane');
+dd(
+    Session::get('name')
+);
+"
+
+The dump output is shown below
+"
+array:2 [▼
+    0 => "John"
+    1 => "Jane"
+]
+"
+
+We also have the "has()" method which checks if the value is set or not.
+
+The example below will show how this works
+
+"
+if (Session::has('name')) {
+    dd('yes the name exists');
+}
+"
+The dump result is true which means "yes the name exists".
+
+We can use this with conditional statements and run different code blocks depending in the situation
+
+To display everything we have stored in the session we just have to use the "all()" keyword, this will
+display all the data and there is no need to pass the key in this.
+
+The example below shows how and what will be the result of the "all()" method
+"
+Session::put('name', ['John']);
+Session::put('age', [25, 28, 24]);
+
+dd(
+    Session::all()
+);
+"
+
+dump result
+array:5 [▼
+    "_token" => "Mn7LYE0xhVEo8AjXFmrc3xnvMbIvHZhhdYp5ugS2"
+    "_previous" => array:1 [▼
+        "url" => "http://127.0.0.1:8000/about"
+    ]
+    "_flash" => array:2 [▼
+        "old" => []
+        "new" => []
+    ]
+    "name" => array:1 [▼
+        0 => "John"
+    ]
+    "age" => array:3 [▼
+        0 => 25
+        1 => 28
+        2 => 24
+    ]
+]
+
+As we can see that both name and age has been dumped
+
+The "_token" we see is known as the CSRF token that we use to protect uses from Cross Site Request Forgery
+What is Cross Site Request Forgery??
+"
+Cross-site request forgery, also known as one-click attack or session riding and abbreviated as CSRF or XSRF,
+is a type of malicious exploit of a website where unauthorized commands are submitted from a user that the web
+application trusts.
+
+more about this at ----> https://en.wikipedia.org/wiki/Cross-site_request_forgery
+"
+
+The "url" is showing the previous url we were on
+
+The "_flash" is the flash storage of laravel where we can display things like flash messages.
+"
+Flashing data to the session stores short-lived data and can display it in the application.
+It is usually used to display status after an action. (Source is )
+"
+
+We also have the "forget()" method in which the data is going to be removed from the session storage,
+this method needs just the key name
+
+Example of "forget()" method
+"
+Session::forget('name');
+"
+
+The other is the session flush method which will remove all the values stored in the session when the code is
+triggered.
+
+Example of "flush()" method
+"
+Session::flush();
+"
+
+Laravel sets the CSRF token for us but for some reason we want to regenrate this token, we just have to use
+the "regenrate()" method. Everytime this command is fired, this will always generate new CSRF token.
+
+Example for regenerate:-
+"
+Session::regenerate();
+dd(
+    Session::all()
+);
+"
+Every time the dump result for the token will be new and different.
+
+For complex sessions we can store this session data inside the database.
+We can use the laravel's authentication scafolding to get the idea of what is being stored in the database.
+
+below is an example of a database migration file:-
+
+"
+Schema::create('sessions', function (Blueprint $table){
+    $table->string('id')->primary();
+    $table->foreignId('user_id')->nullable()->index();
+    $table->string('ip_address', 45)->nullable();
+    $table->text('user_agent')->nullable();
+    $table->text('payload');
+    $table->integer('last_activity')->index();
+});
+"
+Breakdown:-
+1. Every session will have their own unique id
+2. We can also pass in the user id but it can be null or empty as well
+3. The ip address is used to access this page
+4. The user agent is a software that will show the content for the end users
+5. The payload is a part of transmitted data
+6. The last activity means that the last time the user was active on the page
+
+Example:-
+"
+public function index(Request $request)
+    {
+        // this is just for test, there is no form for it
+        $user = User::create([
+            'first_name' => $request['first_name'],
+            'last_name' => $request['last_name'],
+            'email' => $request['email'],
+            'password' => $request['password'],
+        ]);
+        Session::push('user', [
+            'first_name' => $request['first_name'],
+            'last_name' => $request['last_name'],
+            'email' => $request['email'],
+        ]);
+        return $user;
+    }
+"
+The session push will push the data inside the database once the user has registered and redirected to the main dashboard
+
+If you make the model for this and then dump the output, you will find the session id, user id, ip address, user agent, payload
+and the last activity
+
+What is a user agent??
+"
+A user agent is a computer program representing a person, for example, a browser in a Web context.
+Besides a browser, a user agent could be a bot scraping webpages, a download manager, or another app
+accessing the Web.
+"

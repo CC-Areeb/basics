@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CrudController;
 use App\Http\Controllers\FallbackController;
+use Illuminate\Routing\RouteGroup;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,5 +17,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::resource('/home', CrudController::class);
+Route::get('/about', [CrudController::class, 'about']);
 
-Route::fallback(FallbackController::class); 
+Route::fallback(FallbackController::class);
