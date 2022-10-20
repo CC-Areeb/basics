@@ -1,8 +1,7 @@
 <?php
 
-use App\Http\Controllers\CrudController;
 use App\Http\Controllers\FallbackController;
-use Illuminate\Routing\RouteGroup;
+use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,7 +15,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::resource('/home', CrudController::class);
-Route::get('/about', [CrudController::class, 'about']);
-
+Route::resource('/test', PostController::class);
 Route::fallback(FallbackController::class);

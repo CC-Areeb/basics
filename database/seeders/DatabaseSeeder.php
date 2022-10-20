@@ -16,8 +16,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        Post::factory(20)->create([
-            'body' => 'Overriding the body'
-        ]);
+        $this->call(PostSeeder::class);
     }
 }

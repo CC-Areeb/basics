@@ -8,7 +8,7 @@ class FallbackController extends Controller
 {
     public function __invoke()
     {
-        return view('blog.welcome');
+        return view('blog.index');
     }
     
 }
