@@ -865,6 +865,7 @@ this item or data does not exist.
 "THESE ARE THE DATABASE TUPLE NAMES THAT I AM WORKING WITH"
 
 "
+author
 id 
 title 
 excerpt 
@@ -909,6 +910,7 @@ example:-
 "INSERTING DATA BY OOP"
 "
 $post = new Post();
+$post->author = $request->author;
 $post->title = $request->title;
 $post->excerpt = $request->excerpt;
 $post->body = $request->body;
@@ -924,6 +926,7 @@ by using the arrow head and then either inserting it through the form field or b
 We can also use the laravel's eloquent way to store data in the database
 "
 Post::create([
+    'author' => $request->author,
     'title' => $request->title,
     'excerpt' => $request->excerpt,
     'body' => $request->body,
@@ -955,7 +958,266 @@ has been set in the controller as shown below.
 return view('blog.show', ['one' => Post::findOrFail($id)]);
 "
 
-the "one" which is the key can be directly be displayed in the blade file as the blade file has the access to this key.
+the "one" which is the key can be directly be displayed in the blade file as the blade
+ile has the access to this key.
+
+
+"FILE UPLOADS"
+When we are working with files and file uploads, we do not want to store the whole file
+instead we want to store our file in the public directory/folder and only store the path
+for that image inside our database.
+
+In this we will make an entirly new function inside our "post controller". Since we want this
+function to be only inside our "post controller" so for that we will need to make this a
+private function
+
+"
+private function FunctionName()
+{
+    # code...
+}
+"
+
+Next we want the users to store images under different names and for that we can define a
+new variable and inside that variable we can use the "uniqid()" method and join together the
+name of the title so that it can be unique and different.
+
+"$newImageName = uniqid(). '-' . $request->title"
+
+This is just a name and the file extension will be added/chained when we request a new image.
+
+"
+$newImageName = uniqid(). '-' . $request->title . $request->image->extension();
+"
+We will use the "extension()" method to get the file extension
+
+what is this "extension()"?
+
+"
+The extension method will attempt to guess the file's extension based on its contents.
+This extension may be different from the extension that was supplied by the client.
+
+Source:- https://laravel.com/docs/9.x/requests#file-paths-extensions
+"
+
+Next we will move the incomming file into our public storage by using the "public_path()"
+method
+
+The "public_path()" method takes in 1 parameter/parenthesis which is the name of folder
+where all the images will be uploaded and if there isn't any such folder then this method
+will make the folder as well.
+
+Inside the "move()" method, 2 parameters/parenthesis are required:
+
+1. the path which in this case we are using the public path
+2. the name of the image which is "$newImageName"
+
+"
+Post::create([
+    'author' => $request->author,
+    'title' => $request->title,
+    'excerpt' => $request->excerpt,
+    'body' => $request->body,
+    'image_path' => $this->storeImage($request),
+    'is_published' => $request->is_published === 'on',
+    'minutes_to_read' => $request->minutes_to_read,
+]);
+"
+
+As you can see we can use the "$this" keyword to access any function, method, variable
+which inside the current file you are in to access them in multiple places within the same
+file.
+
+before we were passing in a hard coded text but now we are going to use this private function
+inside our store method and specifically inside the image path and yes we did need to
+pass in the parameter of "$request" as that variable is being used to gain access to our
+"Request" object.
+
+So by passing the $request as the parameter, we are getting access to the data that is being returned
+from that private function.
+
+"
+private function storeImage($request)
+{
+    $newImageName = uniqid(). '-' . $request->title . $request->image->extension();
+    return $request->image->move(public_path('images'), $newImageName);
+}
+"
+
+when we return the image path, that whole data is now strored in the $request parameter which is
+passed inside the function, now when we access this function some place else within the same file
+we need to make sure that this "$request" is being accessed and to do that we just pass a variable
+inside the parameter of that "$this" statement.
+"
+$this->storeImage($request)
+"
+
+"VALIDATION"
+
+When we are working with data in large quantities, we need to make sure that the usersa are providing
+the correct data and not just anything. To make sure we can "validate" or check if the data is correct
+or not we can use Laravel's built-in validation features.
+
+We can use a lot of conditional statements and that can do the job but it will be messy and by using
+laravel's validated method, we can validate the inputs easily as this validate method can be appled
+directly at the Request object.
+
+to validate, we first need to access the Request object which the the $request variable and then chain the
+validate method to it.
+"
+$request->validate();
+"
+the validate method accepts 1 argument as an arry.
+
+"
+$request->validate([]);
+"
+
+Inside the array we have to provide key and value pair information about the rules.
+
+Example:-
+"
+$request->validate([
+    'author' => 'required',
+    'title' => 'required|unique:posts',
+    'excerpt' => 'required|unique:posts',
+    'body' => 'required',
+    'image_path' => ['required', 'mimes:jpg,png,jpeg'],
+    'minutes_to_read' => 'min:0',
+]);
+"
+This is one of many ways to validate the form input data and futher down we will looks at
+more.
+
+When this is defined, we now have to make sure these errors are displayed in the front and to
+do this we can use the error directive and display the messages there
+"
+<span class="text-danger">
+    @error('minutes_to_read')
+        *{{ $message }}
+    @enderror
+</span>
+"
+The span tags are just so that we can add some bootstrap styles, the main thing is the error
+directive. 
+
+This directive needs the name attribute of the input field and we can access the error text
+by displaying (echoing) it directly by using the "$message" variable.
+
+"UPDATE"
+First we need to make sure that we have made the edit form where users will edit the blog posts
+and after that we have to return the view inside the controller, since I am using a resource
+controller I can use the edit method that is already defined and I can pass in the "$id" as the
+argument.
+
+Inside the function, I can return the view with the model data passed in as a key value pair as
+shown below.
+"
+return view('blog.edit', [
+    'one' => Post::where('id', $id)->first(),
+]);
+"
+
+We can also test this by dumping the eloquent query and see what the result will be when
+you click the anchor button and this will redirect to the new edit page with the id passed
+in as the route parameter.
+
+
+"MODEL RELATIONS"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 "SESSIONS"
 

@@ -28,7 +28,12 @@
                             posted at: {{ $item->created_at }}
                         </p>
                         <a href="{{ route('test.show', $item->id) }}" class="text-decoration-none">
-                            Detail ...
+                            More details
+                        </a>
+
+                        <a href="{{ route('test.edit', $item->id) }}"
+                            class="text-decoration-none position-absolute bottom-0 end-0 p-4 text-success">
+                            Update blog post
                         </a>
                     </div>
                 </div>
