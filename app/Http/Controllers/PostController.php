@@ -7,6 +7,9 @@ use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use RealRashid\SweetAlert\Facades\Alert;
+
+use function Ramsey\Uuid\v1;
 
 class PostController extends Controller
 {
@@ -33,7 +36,7 @@ class PostController extends Controller
         // dd($allPost);
 
         
-        $allPost = Post::orderBy('created_at', 'desc')->get();
+        $allPost = Post::orderBy('id', 'desc')->get();
         return view('blog.index', ['post' => $allPost]);
     }
 
@@ -55,11 +58,20 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'author' => 'required',
+            'title' => 'required|unique:posts',
+            'excerpt' => 'required|unique:posts',
+            'body' => 'required',
+            'image_path' => ['required', 'mimes:jpg,png,jpeg'],
+            'minutes_to_read' => 'min:0',
+        ]);
         Post::create([
+            'author' => $request->author,
             'title' => $request->title,
             'excerpt' => $request->excerpt,
             'body' => $request->body,
-            'image_path' => 'temporary',
+            'image_path' => $this->storeImage($request),
             'is_published' => $request->is_published === 'on',
             'minutes_to_read' => $request->minutes_to_read,
         ]);
@@ -85,9 +97,13 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function edit(Post $post)
+    public function edit($id)
     {
-        //
+        $test = Post::where('id', $id)->first();
+        dd($test);
+        return view('blog.edit', [
+            'one' => Post::where('id', $id)->first(),
+        ]);
     }
 
     /**
@@ -111,5 +127,11 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         //
+    }
+
+    private function storeImage($request)
+    {
+        $newImageName = uniqid(). '-' . $request->image_path->extension();
+        return $request->image_path->move(public_path('images'), $newImageName);
     }
 }
