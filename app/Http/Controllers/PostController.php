@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
@@ -15,7 +17,24 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
+        /**
+         * show all data that you want to display
+         * this can be in table or cards or however you like
+         */
+
+        // $allPost = Post::where('id', '>' , 2)->get();
+        // $allPost = Post::orderBy('id', 'desc')->take(5)->get();
+        // $allPost = Post::chunk(5, function ($allPost) {
+        //     foreach ($allPost as $onePost) {
+        //         echo $onePost->title . '<br>';
+        //     }
+        // });
+        // $allPost = Post::get()->count();
+        // dd($allPost);
+
+        
+        $allPost = Post::orderBy('created_at', 'desc')->get();
+        return view('blog.index', ['post' => $allPost]);
     }
 
     /**
@@ -25,7 +44,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        return view('blog.create');
     }
 
     /**
@@ -34,9 +53,17 @@ class PostController extends Controller
      * @param  \App\Http\Requests\StorePostRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StorePostRequest $request)
+    public function store(Request $request)
     {
-        //
+        Post::create([
+            'title' => $request->title,
+            'excerpt' => $request->excerpt,
+            'body' => $request->body,
+            'image_path' => 'temporary',
+            'is_published' => $request->is_published === 'on',
+            'minutes_to_read' => $request->minutes_to_read,
+        ]);
+        return redirect(route('test.index'));
     }
 
     /**
@@ -45,10 +72,12 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function show(Post $post)
+    public function show($id)
     {
-        //
+        // show a specific data based on id
+        return view('blog.show', ['one' => Post::findOrFail($id)]);
     }
+
 
     /**
      * Show the form for editing the specified resource.

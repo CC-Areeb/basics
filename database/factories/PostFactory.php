@@ -23,6 +23,7 @@ class PostFactory extends Factory
             'minutes_to_read' => $this->faker->numberBetween(1, 20),
             'image_path' => $this->faker->imageUrl(640, 480, null, true, null, false),
             'is_published' => $this->faker->numberBetween(0, 1),
+            'author' => $this->faker->name(),
         ];
     }
 }
